@@ -1,0 +1,20 @@
+package com.project.space.journalApp.service;
+
+import com.project.space.journalApp.entity.JournalEntry;
+import org.bson.types.ObjectId;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface JournalEntryService {
+
+    List<JournalEntry> getAllEntries();
+
+    void saveEntry(JournalEntry journalEntry, String userName);
+
+    void saveEntry(JournalEntry journalEntry);
+
+    Optional<JournalEntry> findById(ObjectId id);
+
+    boolean deleteById(ObjectId id, String userName);
+}
