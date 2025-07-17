@@ -3,43 +3,62 @@ package com.project.space.journalApp.service.impl;
 import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.List;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceImplTest {
 
     @InjectMocks
-//    @Autowired
     private CustomUserDetailsServiceImpl customUserDetailsService;
 
     @Mock
-//    @MockBean
     private UserRepository userRepository;
+
+    private UserEntity testUserEntity;
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks if necessary
-        MockitoAnnotations.openMocks(this); // Uncomment if using Mockito annotations
-
+        testUserEntity = new UserEntity();
+        testUserEntity.setUsername("ram");
+        testUserEntity.setPassword("encodedPassword"); // Assuming it's encoded
+        testUserEntity.setRoles(Collections.singletonList("USER")); // Or whatever roles
+        testUserEntity.setJournalEntries(Collections.emptyList()); // Initialize to avoid NPEs later
     }
 
     @Test
-    void loadUserByUsername() {
-        when(userRepository.findByUserName(ArgumentMatchers.anyString())).thenReturn(UserEntity.builder().username("ram").password("%YTRFTYRFYTHsmdvmov").roles(List.of("USER")).build());
+    void loadUserByUsername_UserFound() {
+        // Mock the behavior of userRepository.findByUsername
+        Mockito.when(userRepository.findByUsername("ram")).thenReturn(testUserEntity);
+
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("ram");
-        assertNotNull(userDetails, "UserDetails should not be null");
+
+        assertNotNull(userDetails);
+        assertEquals("ram", userDetails.getUsername());
+        assertEquals("encodedPassword", userDetails.getPassword());
+        // Add more assertions for roles etc.
+        Mockito.verify(userRepository, Mockito.times(1)).findByUsername("ram"); // Verify interaction
+    }
+
+    @Test
+    void loadUserByUsername_UserNotFound() {
+        // Mock the behavior for a user not found
+        Mockito.when(userRepository.findByUsername("nonexistentUser")).thenReturn(null);
+
+        // Assert that UsernameNotFoundException is thrown
+        assertThrows(UsernameNotFoundException.class, () -> {
+            customUserDetailsService.loadUserByUsername("nonexistentUser");
+        });
+        Mockito.verify(userRepository, Mockito.times(1)).findByUsername("nonexistentUser");
     }
 }

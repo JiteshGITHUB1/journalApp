@@ -19,7 +19,6 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-
     private final UserRepository userRepository;
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -51,7 +50,7 @@ public class UserServiceImpl implements UserService {
             log.info("Saving New User Entry: {}", userDTO);
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername(userDTO.getUsername());
-            userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+            userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userEntity.setRoles(List.of("USER")); // Default role for new users
             UserEntity saved = userRepository.save(userEntity);
             responseDTO = convertToUserDTO(saved);
@@ -86,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findByUserName(String username) {
-        return userRepository.findByUserName(username);
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -97,7 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByUserName(String userName) {
         log.info("Deleting User with username: {}", userName);
-        userRepository.deleteByUserName(userName);
+        userRepository.deleteByUsername(userName);
     }
 
 
@@ -123,7 +122,6 @@ public class UserServiceImpl implements UserService {
             journalDTOList.add(journalDTO);
         }
         userDTO.getJournalEntries().addAll(journalDTOList);
-        userDTO.getRoles().addAll(userEntity.getRoles());
         return userDTO;
     }
 

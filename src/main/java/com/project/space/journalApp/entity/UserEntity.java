@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UserEntity {
     @Id
     private ObjectId id;
