@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-      - main # Add 'main' if it's also a primary branch
-      - develop # Add other development branches as needed
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
