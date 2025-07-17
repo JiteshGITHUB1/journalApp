@@ -1,6 +1,6 @@
 package com.project.space.journalApp.service.impl;
 
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -38,7 +38,7 @@ class CustomUserDetailsServiceImplTest {
 
     @Test
     void loadUserByUsername() {
-        when(userRepository.findByUserName(ArgumentMatchers.anyString())).thenReturn(User.builder().username("ram").password("%YTRFTYRFYTHsmdvmov").roles(List.of("USER")).build());
+        when(userRepository.findByUserName(ArgumentMatchers.anyString())).thenReturn(UserEntity.builder().username("ram").password("%YTRFTYRFYTHsmdvmov").roles(List.of("USER")).build());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("ram");
         assertNotNull(userDetails, "UserDetails should not be null");
     }

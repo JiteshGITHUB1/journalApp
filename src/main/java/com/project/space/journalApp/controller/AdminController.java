@@ -1,6 +1,6 @@
 package com.project.space.journalApp.controller;
 
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.dto.UserDTO;
 import com.project.space.journalApp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +19,17 @@ public class AdminController {
     }
 
     @GetMapping("/all-users")
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> allUser = userService.getAllUser();
-        if(allUser != null && !allUser.isEmpty()){
-            return new ResponseEntity<>(allUser, HttpStatus.OK);
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        List<UserDTO> userDTO = userService.getAllUser();
+        if(userDTO != null && !userDTO.isEmpty()){
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/create-admin-user")
-    public ResponseEntity<User> createUser(@RequestBody User user){
-        userService.saveAdminUser(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO){
+        UserDTO responseDTO = userService.saveAdminUser(userDTO);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 }

@@ -1,6 +1,7 @@
 package com.project.space.journalApp.service.impl;
 
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.dto.UserDTO;
+import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.repository.UserRepository;
 import com.project.space.journalApp.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -14,11 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
+import java.util.function.BooleanSupplier;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
 @SpringBootTest
-class UserServiceImplTest {
+class UserDTOEntityServiceImplTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -41,8 +44,8 @@ class UserServiceImplTest {
 
     @Test
      void testFindByUserName() {
-        User user = userRepository.findByUserName("jit");
-        assertFalse(user.getJournalEntries().isEmpty());
+        UserEntity userEntity = userRepository.findByUserName("jit");
+        assertFalse(userEntity.getJournalEntries().isEmpty());
     }
 
     @ParameterizedTest
@@ -56,7 +59,7 @@ class UserServiceImplTest {
 
     @ParameterizedTest
     @ArgumentsSource(UserArgumentsProvider.class)
-     void testSaveNewUserByArg(User user){
-        assertTrue(userService.saveNewUser(user));
+     void testSaveNewUserByArg(UserDTO userDTO){
+        assertTrue((BooleanSupplier) userService.saveNewUser(userDTO));
     }
 }

@@ -1,7 +1,8 @@
 package com.project.space.journalApp.service.impl;
 
+import com.project.space.journalApp.dto.JournalDTO;
 import com.project.space.journalApp.entity.JournalEntry;
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.repository.JournalEntryRepository;
 import com.project.space.journalApp.service.JournalEntryService;
 import com.project.space.journalApp.service.UserService;
@@ -34,15 +35,18 @@ public class JournalEntryServiceImpl implements JournalEntryService {
 
     @Override
     @Transactional
-    public void saveEntry(JournalEntry journalEntry, String userName){
-        log.info("Saving journal entry: {}", journalEntry);
+    public JournalDTO saveEntry(JournalDTO journalDTO, String userName){
+        log.info("Saving journal entry: {}", journalDTO);
+        JournalDTO responseDTO;
         try {
-            if (journalEntry != null) {
-                User user = userService.findByUserName(userName);
-                journalEntry.setDateModified(java.time.LocalDateTime.now());
+            if (journalDTO != null) {
+                UserEntity userEntity = userService.findByUserName(userName);
+                journalDTO.setDateModified(java.time.LocalDateTime.now());
+                JournalEntry journalEntry = convertToJournalEntity(journalDTO);
                 JournalEntry saved = journalEntryRepository.save(journalEntry);
-                user.getJournalEntries().add(saved);
-                userService.saveEntry(user);
+                userEntity.getJournalEntries().add(saved);
+                userService.saveEntry(userEntity);
+                responseDTO = convertToJournalDTO(saved);
             } else {
                 throw new IllegalArgumentException("Journal entry cannot be null");
             }
@@ -50,6 +54,7 @@ public class JournalEntryServiceImpl implements JournalEntryService {
             log.error("Error saving journal entry: {}", e.getMessage());
             throw new IllegalArgumentException("Failed to save journal entry", e);
         }
+        return responseDTO;
     }
 
     @Override
@@ -78,10 +83,10 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     public boolean deleteById(ObjectId id, String userName) {
         boolean removed = false;
         try {
-            User user = userService.findByUserName(userName);
-            removed = user.getJournalEntries().removeIf(entry -> entry.getId().equals(id));
+            UserEntity userEntity = userService.findByUserName(userName);
+            removed = userEntity.getJournalEntries().removeIf(entry -> entry.getId().equals(id));
             if (removed) {
-                userService.saveEntry(user);
+                userService.saveEntry(userEntity);
                 journalEntryRepository.deleteById(id);
             }
             return removed;
@@ -89,5 +94,30 @@ public class JournalEntryServiceImpl implements JournalEntryService {
             log.error("Error deleting journal entry with ID {}: {}", id, e.getMessage());
             throw new IllegalArgumentException("Failed to delete journal entry", e);
         }
+    }
+
+    @Override
+    public JournalDTO convertToJournalDTO(JournalEntry journalEntry){
+        if (journalEntry == null) {
+            return null;
+        }
+        JournalDTO journalDTO = new JournalDTO();
+        journalDTO.setId(String.valueOf(journalEntry.getId()));
+        journalDTO.setTitle(journalEntry.getTitle());
+        journalDTO.setContent(journalEntry.getContent());
+        journalDTO.setDateCreated(journalEntry.getDateCreated());
+        journalDTO.setDateModified(journalEntry.getDateModified());
+        return journalDTO;
+    }
+
+    @Override
+    public JournalEntry convertToJournalEntity(JournalDTO journalDTO) {
+        JournalEntry journalEntry = new JournalEntry();
+        journalEntry.setTitle(journalDTO.getTitle());
+        journalEntry.setContent(journalDTO.getContent());
+        if (journalDTO.getId() != null) {
+            journalEntry.setId(new ObjectId(journalDTO.getId()));
+        }
+        return journalEntry;
     }
 }

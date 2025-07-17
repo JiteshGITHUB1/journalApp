@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class JournalEntry {
-
     @Id
     private ObjectId id;
     @NonNull

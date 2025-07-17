@@ -1,6 +1,6 @@
 package com.project.space.journalApp.service.impl;
 
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +15,12 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username);
-        if(user != null){
+        UserEntity userEntity = userRepository.findByUserName(username);
+        if(userEntity != null){
             return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRoles().toArray(new String[0]))
+                    .username(userEntity.getUsername())
+                    .password(userEntity.getPassword())
+                    .roles(userEntity.getRoles().toArray(new String[0]))
                     .build();
         }
         throw new UsernameNotFoundException("User not found with username: " + username);

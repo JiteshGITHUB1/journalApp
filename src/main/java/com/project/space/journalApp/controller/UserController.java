@@ -1,42 +1,31 @@
 package com.project.space.journalApp.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.space.journalApp.entity.JournalEntry;
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.dto.UserDTO;
+import com.project.space.journalApp.entity.UserEntity;
 import com.project.space.journalApp.service.UserService;
-import com.project.space.journalApp.service.impl.JournalEntryServiceImpl;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    /*@GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUser(), HttpStatus.OK);
-    }*/
-
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUserById() {
+    public ResponseEntity<UserEntity> getUserById() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> user = Optional.ofNullable(userService.findByUserName(authentication.getName()));
-        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        Optional<UserEntity> user = Optional.ofNullable(userService.findByUserName(authentication.getName()));
+        return user.map(userEntity -> new ResponseEntity<>(userEntity, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/delete")
@@ -47,14 +36,15 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
-        User existingUser = userService.findByUserName(userName);
-        existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
-        userService.saveNewUser(existingUser);
-        return new ResponseEntity<>(existingUser, HttpStatus.OK);
+        UserEntity existingUserEntity = userService.findByUserName(userName);
+        if (existingUserEntity != null) {
+            UserDTO responseDTO = userService.saveNewUser(userDTO);
+            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        }
+       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

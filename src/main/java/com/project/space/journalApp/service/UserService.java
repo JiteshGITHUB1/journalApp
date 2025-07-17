@@ -1,22 +1,29 @@
 package com.project.space.journalApp.service;
 
-import com.project.space.journalApp.entity.User;
+import com.project.space.journalApp.dto.UserDTO;
+import com.project.space.journalApp.entity.UserEntity;
 import org.bson.types.ObjectId;
 
 import java.util.List;
 
 public interface UserService {
-    void saveAdminUser(User user);
+    UserDTO saveNewUser(UserDTO userDTO);
 
-    List<User> getAllUser();
+    UserDTO saveAdminUser(UserDTO userDTO);
 
-    boolean saveEntry(User user);
+    List<UserDTO> getAllUser();
 
-    boolean saveNewUser(User user);
+    boolean saveEntry(UserEntity userEntity);
 
-    User findByUserName(String userName);
+    UserEntity findByUserName(String userName);
 
     void deleteById(ObjectId id);
 
     void deleteByUserName(String userName);
+
+    // Helper method to convert UserEntity to UserDTO
+    UserDTO convertToUserDTO(UserEntity userEntity);
+
+    // Helper method to convert UserDTO to UserEntity
+    UserEntity convertToUserEntity(UserDTO userDTO);
 }
