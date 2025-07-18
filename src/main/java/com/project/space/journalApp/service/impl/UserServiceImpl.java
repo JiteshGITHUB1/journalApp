@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean saveEntry(UserEntity userEntity){
+    public UserEntity saveEntry(UserEntity userEntity){
         try {
             log.info("Saving User Entry: {}", userEntity);
             if (userEntity != null) {
@@ -38,9 +38,9 @@ public class UserServiceImpl implements UserService {
             }
         } catch (Exception e) {
             log.error("Error saving user entry {} : {}", userEntity.getUsername(), e.getMessage());
-            return false;
+            return userEntity;
         }
-      return true;
+      return userEntity;
     }
 
     @Override

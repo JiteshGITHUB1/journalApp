@@ -13,7 +13,7 @@ public interface UserService {
 
     List<UserDTO> getAllUser();
 
-    boolean saveEntry(UserEntity userEntity);
+    UserEntity saveEntry(UserEntity userEntity);
 
     UserEntity findByUserName(String userName);
 

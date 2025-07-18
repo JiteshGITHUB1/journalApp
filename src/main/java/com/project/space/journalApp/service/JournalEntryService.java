@@ -15,7 +15,7 @@ public interface JournalEntryService {
     @Transactional
     JournalDTO saveEntry(JournalDTO journalDTO, String userName);
 
-    void saveEntry(JournalEntry journalEntry);
+    JournalEntry saveEntry(JournalEntry journalEntry);
 
     Optional<JournalEntry> findById(ObjectId id);
 

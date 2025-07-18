@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Document(collection = "journal_entries")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class JournalEntry {
     @Id
     private ObjectId id;

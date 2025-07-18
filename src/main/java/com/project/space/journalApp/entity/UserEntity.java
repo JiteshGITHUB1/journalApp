@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 public class UserEntity {
     @Id
@@ -24,11 +25,8 @@ public class UserEntity {
     @NonNull
     private String password;
     @DBRef
+    @Builder.Default
     private List<JournalEntry> journalEntries = new ArrayList<>();
-    private List<String> roles;
-
-    public UserEntity() {
-        this.journalEntries = new ArrayList<>();
-        this.roles = new ArrayList<>();
-    }
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
 }

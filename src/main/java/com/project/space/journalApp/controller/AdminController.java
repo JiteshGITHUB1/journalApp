@@ -29,6 +29,9 @@ public class AdminController {
 
     @PostMapping("/create-admin-user")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO){
+        if (userDTO.getUsername() == null || userDTO.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty for admin user");
+        }
         UserDTO responseDTO = userService.saveAdminUser(userDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
